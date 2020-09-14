@@ -1,10 +1,8 @@
 package com.example.demo.controller;
 
 
-import com.example.demo.payload.SignupRequest;
 import com.example.demo.payload.TaskRequest;
 import com.example.demo.service.SingleTaskService;
-import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
