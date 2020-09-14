@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 
+import com.example.demo.payload.SigninRequest;
 import com.example.demo.payload.SignupRequest;
 import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,5 +21,10 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<?> register(@RequestBody SignupRequest signUpRequest) {
         return userService.register(signUpRequest);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody SigninRequest signinRequest) {
+        return userService.login(signinRequest);
     }
 }
