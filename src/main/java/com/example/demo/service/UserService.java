@@ -3,9 +3,9 @@ package com.example.demo.service;
 import com.example.demo.model.User;
 import com.example.demo.payload.SigninRequest;
 import com.example.demo.payload.SignupRequest;
+import com.example.demo.payload.TokenRequest;
 import com.example.demo.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -24,15 +24,11 @@ public class UserService {
         String password = signUpRequest.getPassword();
 
         if (userRepo.existsByUsername(username)) {
-            return ResponseEntity
-                    .badRequest()
-                    .body("Error: Username is already taken!");
+            return badRequestWithMessage("Error: Username is already taken!");
         }
 
         if (userRepo.existsByEmail(email)) {
-            return ResponseEntity
-                    .badRequest()
-                    .body("Error: Email is already in use!");
+            return badRequestWithMessage("Error: Email is already in use!");
         }
 
         User user = new User(username, email, password);
@@ -48,22 +44,42 @@ public class UserService {
         String password = signinRequest.getPassword();
 
         if (!userRepo.existsByUsername(username)) {
-            return ResponseEntity
-                    .badRequest()
-                    .body("Error: No user with this Username");
+            return badRequestWithMessage("Error: No user with this Username");
         }
 
         User userFromDB = userRepo.findUserByUsername(username);
 
         if (!userFromDB.getPassword().equals(password)) {
-            return ResponseEntity
-                    .badRequest()
-                    .body("incorrect password");
+            return badRequestWithMessage("Incorrect password");
         }
 
         userFromDB.setToken(FAKE_TOKEN);
+        User updatedUser = updateUser(userFromDB);
 
-        return ResponseEntity.ok((userFromDB));
+        return ResponseEntity.ok((updatedUser));
+    }
 
+
+    public ResponseEntity<?> logout(TokenRequest tokenRequest) {
+        User userFromDB = userRepo.findUserByToken(tokenRequest.getToken());
+        if (userFromDB == null) {
+            return badRequestWithMessage("User with this token not found");
+        }
+
+        userFromDB.setToken(null);
+        User updatedUser = updateUser(userFromDB);
+
+        return ResponseEntity.ok((updatedUser));
+    }
+
+    private ResponseEntity<String> badRequestWithMessage(String s) {
+        return ResponseEntity
+                .badRequest()
+                .body(s);
+    }
+
+    private User updateUser(User userFromDB) {
+        userRepo.delete(userFromDB);
+        return userRepo.save(userFromDB);
     }
 }

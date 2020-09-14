@@ -1,15 +1,14 @@
 package com.example.demo.controller;
 
 
+import antlr.Token;
 import com.example.demo.payload.SigninRequest;
 import com.example.demo.payload.SignupRequest;
+import com.example.demo.payload.TokenRequest;
 import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/")
@@ -26,5 +25,10 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody SigninRequest signinRequest) {
         return userService.login(signinRequest);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@RequestBody TokenRequest tokenRequest) {
+        return userService.logout(tokenRequest);
     }
 }
